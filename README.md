@@ -56,3 +56,38 @@ Founder sees the latest state
 New context feeds the Advisor again
         ↓
 Continuous improvement
+
+# System Architecture
+┌───────────────────────────────────────────────┐
+│                 ALTORA FRONTEND               │
+│                                               │
+│ React + TypeScript + Vite                     │
+│                                               │
+│ Landing | Auth | Workspace | Advisor          │
+│ Memory | Finance | Inventory | Tasks          │
+│ Milestones | Chat | Reports | Settings        │
+└──────────────────────┬────────────────────────┘
+                       │
+             REST API + WebSocket
+                       │
+                       ▼
+┌───────────────────────────────────────────────┐
+│                FASTAPI BACKEND                │
+│                                               │
+│ Auth │ Business │ Advisor │ Memory            │
+│ Finance │ Inventory │ Tasks │ Milestones      │
+│ Chat │ Notifications │ Real-Time              │
+└───────────────┬─────────────────┬─────────────┘
+                │                 │
+                ▼                 ▼
+       ┌────────────────┐   ┌─────────────────┐
+       │   SQLAlchemy   │   │   AI Services   │
+       │    Database    │   │  Advisor / AI   │
+       └───────┬────────┘   └─────────────────┘
+               │
+               ▼
+       User / Business / Memory /
+       Finance / Inventory /
+       Tasks / Milestones /
+       Reports / Notifications
+
