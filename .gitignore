@@ -22,3 +22,23 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment & Databases
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated Storage & PDFs
+*.pdf
+storage/pdf/
+backend/storage/pdf/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+

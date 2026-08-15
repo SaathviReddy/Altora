@@ -34,14 +34,9 @@ export const Chat: React.FC = () => {
       const fin = await api.finance.getSummary();
       setFinanceSummary(fin);
 
-      // Initial messages setup
-      setMessages([
-        {
-          sender: 'assistant',
-          text: `Greetings. I am reviewing the operational parameters for your business, ${activeProfile?.industry || 'My Venture'}. How can I assist with your strategy roadmap, client retentions, or SWOT metrics today?`,
-          timestamp: new Date().toISOString()
-        }
-      ]);
+      // Load chat history from backend database
+      const chatHistory = await api.chat.getMessages();
+      setMessages(chatHistory);
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,39 +68,14 @@ export const Chat: React.FC = () => {
     setInputText('');
     setResponding(true);
 
-    // Simulate AI strategizing based on exact context
-    setTimeout(() => {
-      let aiResponseText = '';
-      const textLower = userMsgText.toLowerCase();
-
-      if (textLower.includes('pricing') || textLower.includes('revenue') || textLower.includes('cost')) {
-        aiResponseText = `Referencing your active operating profile: your current revenue stands at $${financeSummary?.revenue.toLocaleString()} with costs at $${financeSummary?.expenses.toLocaleString()}. If you are reviewing client positioning, I recommend testing packages priced at a flat $1,500/mo retainer to push net profitability past $25,000 this quarter.`;
-      } else if (textLower.includes('swot') || textLower.includes('competit') || textLower.includes('strength')) {
-        aiResponseText = `Looking at your active sector (${profile?.industry || 'B2B Consultancy'}): your strengths include low initial capital spending, but capacity remains a bottleneck. For competitor mitigation, focus on fractional branding or specific operational integrations.`;
-      } else if (textLower.includes('task') || textLower.includes('todo') || textLower.includes('milestone')) {
-        const pendingTask = tasks.find(t => !t.completed);
-        aiResponseText = `You currently have pending priorities in your workspace. Specifically, you should complete: "${pendingTask ? pendingTask.title : 'Configure pricing retainers'}". Let's log this outcome to the Milestones page once achieved.`;
-      } else {
-        aiResponseText = `Acknowledge. Altora has locked this request into the ${profile?.industry || 'Venture'} context matrix. Under your goals to "${profile?.goals?.[0] || 'Scale active clients'}", I recommend mapping your next actions strictly to validation templates. Should we commit this outcome as a Decision Memory?`;
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: 'assistant',
-          text: aiResponseText,
-          timestamp: new Date().toISOString()
-        }
-      ]);
+    try {
+      const aiResponse = await api.chat.sendMessage(userMsgText);
+      setMessages((prev) => [...prev, aiResponse]);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setResponding(false);
-
-      // Auto-commit conversational pivot to Memory log
-      api.memory.addMemory(
-        'Conversations',
-        `Strategized: ${userMsgText.slice(0, 30)}...`,
-        `Q: "${userMsgText}"\nA: "${aiResponseText}"`
-      );
-    }, 1200);
+    }
   };
 
   if (loading) {
