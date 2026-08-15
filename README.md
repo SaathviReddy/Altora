@@ -57,7 +57,8 @@ New context feeds the Advisor again
         ↓
 Continuous improvement
 
-# System Architecture
+## System Architecture
+text
 ┌───────────────────────────────────────────────┐
 │                 ALTORA FRONTEND               │
 │                                               │
